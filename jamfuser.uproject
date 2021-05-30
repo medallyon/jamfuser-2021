@@ -18,11 +18,6 @@
 			"Name": "PTMTool",
 			"Enabled": true,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/946185f2400d4be9b8d4190e95df86c8"
-		},
-		{
-			"Name": "AutoSettings",
-			"Enabled": true,
-			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/fcc480bac77b4373bc6c68f0ae4f9847"
 		}
 	]
 }
