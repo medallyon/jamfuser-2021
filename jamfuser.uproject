@@ -33,6 +33,11 @@
 			"Name": "EasyMultiSave",
 			"Enabled": true,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/7232621c23174bbbbb64c7bfb6583f6f"
+		},
+		{
+			"Name": "Linter",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/ca0639af6339476da86fa3bcf15de8ec"
 		}
 	]
 }
