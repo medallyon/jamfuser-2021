@@ -74,10 +74,14 @@ Plugins/*/Intermediate/*
 DerivedDataCache/*
 
 # Actual Game Content
-Content/*
-!Content/_Game
-!Content/Movies
+# Content/*
+# !Content/_Game
+# !Content/Movies
 
 # Root-level images
 /*.png
 !Content/*.png
+
+# Ignore all maps that aren't part of our game
+*.umap
+!Content/_Game/*.umap
