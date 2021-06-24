@@ -84,4 +84,4 @@ DerivedDataCache/*
 
 # Ignore all maps that aren't part of our game
 *.umap
-!Content/_Game/*.umap
+!Content/_Game/**/*.umap
