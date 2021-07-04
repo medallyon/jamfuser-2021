@@ -1,0 +1,222 @@
+// Copyright 2021 fpwong. All Rights Reserved.
+
+#pragma once
+
+#include "CoreMinimal.h"
+
+#include "AutoSizeCommentsSettings.h"
+#include "Editor/GraphEditor/Public/SGraphNodeComment.h"
+#include "Editor/GraphEditor/Public/SGraphNodeResizable.h"
+#include "Widgets/DeclarativeSyntaxSupport.h"
+
+struct FPresetCommentStyle;
+class UEdGraphNode_Comment;
+
+/**
+ * Auto resizing comment node
+ */
+enum class ASC_AnchorPoint : uint8
+{
+	LEFT,
+	RIGHT,
+	TOP,
+	BOTTOM,
+	TOP_LEFT,
+	TOP_RIGHT,
+	BOTTOM_LEFT,
+	BOTTOM_RIGHT,
+	NONE
+};
+
+class SAutoSizeCommentsGraphNode final : public SGraphNode
+{
+public:
+	/** This delay is to ensure that all nodes exist on the graph and have their bounds properly set */
+	int RefreshNodesDelay = 0;
+
+	bool bIsDragging = false;
+
+	bool bIsMoving = false;
+
+	bool bPreviousAltDown = false;
+
+	/** Variables related to resizing the comment box by dragging anchor corner points */
+	FVector2D DragSize;
+	bool bUserIsDragging = false;
+
+	ASC_AnchorPoint CachedAnchorPoint = ASC_AnchorPoint::NONE;
+	float AnchorSize = 40.f;
+
+	virtual void MoveTo(const FVector2D& NewPosition, FNodeSet& NodeFilter) override;
+
+public:
+	// @formatter:off
+	SLATE_BEGIN_ARGS(SAutoSizeCommentsGraphNode) {}
+	SLATE_END_ARGS()
+	// @formatter:on
+
+	void Construct(const FArguments& InArgs, class UEdGraphNode* InNode);
+	virtual ~SAutoSizeCommentsGraphNode() override;
+
+	//~ Begin SWidget Interface
+	virtual FReply OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
+	virtual FReply OnMouseButtonUp(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
+	virtual FReply OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
+	virtual FReply OnMouseButtonDoubleClick(const FGeometry& InMyGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
+	//~ End SWidget Interface
+
+	//~ Begin SNodePanel::SNode Interface
+	virtual bool ShouldAllowCulling() const override { return false; }
+	virtual int32 GetSortDepth() const override;
+	//~ End SNodePanel::SNode Interface
+
+	//~ Begin SPanel Interface
+	virtual FVector2D ComputeDesiredSize(float) const override;
+	//~ End SPanel Interface
+
+	//~ Begin SGraphNode Interface
+	virtual bool IsNameReadOnly() const override;
+	virtual FSlateColor GetCommentColor() const override { return GetCommentBodyColor(); }
+	//~ End SGraphNode Interface
+
+	/** return if the node can be selected, by pointing given location */
+	virtual bool CanBeSelected(const FVector2D& MousePositionInNode) const override;
+
+	/** return size of the title bar */
+	virtual FVector2D GetDesiredSizeForMarquee() const override;
+
+	/** return rect of the title bar */
+	virtual FSlateRect GetTitleRect() const override;
+
+	class UEdGraphNode_Comment* GetCommentNodeObj() { return CommentNode; }
+
+protected:
+	//~ Begin SGraphNode Interface
+	virtual void UpdateGraphNode() override;
+
+	//~ Begin SNodePanel::SNode Interface
+	virtual void SetOwner(const TSharedRef<SGraphPanel>& OwnerPanel) override;
+	virtual FCursorReply OnCursorQuery(const FGeometry& MyGeometry, const FPointerEvent& CursorEvent) const override;
+	//~ End SNodePanel::SNode Interface
+
+	FReply HandleRandomizeColorButtonClicked();
+	FReply HandleHeaderButtonClicked();
+	FReply HandleRefreshButtonClicked();
+	FReply HandlePresetButtonClicked(const FPresetCommentStyle Style);
+	FReply HandleAddButtonClicked();
+	FReply HandleSubtractButtonClicked();
+	FReply HandleClearButtonClicked();
+
+	bool AddInitialNodes();
+	bool AddAllSelectedNodes();
+	bool RemoveAllSelectedNodes();
+
+	void UpdateColors(const float InDeltaTime);
+
+private:
+	/** @return the color to tint the comment body */
+	FSlateColor GetCommentBodyColor() const;
+
+	/** @return the color to tint the title bar */
+	FSlateColor GetCommentTitleBarColor() const;
+
+	/** @return the color to tint the comment bubble */
+	FSlateColor GetCommentBubbleColor() const;
+
+	FLinearColor CommentControlsColor;
+	FSlateColor GetCommentControlsColor() const;
+
+	FLinearColor CommentControlsTextColor;
+	FSlateColor GetCommentControlsTextColor() const;
+
+	FSlateColor GetPresetColor(const FLinearColor Color) const;
+
+	/** Returns the width to wrap the text of the comment at */
+	float GetWrapAt() const;
+
+	void ResizeToFit();
+
+	void MoveEmptyCommentBoxes();
+
+	void CreateCommentControls();
+	void CreateColorControls();
+
+	void InitializeColor(const UAutoSizeCommentsSettings* ASCSettings, bool bIsPresetStyle, bool bIsHeaderComment);
+
+	FVector2D UserSize;
+
+	bool bHasSetNodesUnderComment = false;
+
+	/** the title bar, needed to obtain it's height */
+	TSharedPtr<SBorder> TitleBar;
+
+	UEdGraphNode_Comment* CommentNode = nullptr;
+
+	TSharedPtr<SCommentBubble> CommentBubble;
+
+	/** cached comment title */
+	FString CachedCommentTitle;
+
+	/** cached comment title */
+	int32 CachedWidth = 0;
+
+	/** cached font size */
+	int32 CachedFontSize = 0;
+
+	int32 CachedNumPresets = 0;
+
+	bool bCachedBubbleVisibility = false;
+	bool bCachedColorCommentBubble = false;
+
+	float OpacityValue = 0;
+
+	// TODO: Look into resize transaction perhaps requires the EdGraphNode_Comment to have UPROPERTY() for NodesUnderComment
+	// TSharedPtr<FScopedTransaction> ResizeTransaction;
+
+	/** Local copy of the comment style */
+	FInlineEditableTextBlockStyle CommentStyle;
+
+	TSharedPtr<class SButton> ToggleHeaderButton;
+	TSharedPtr<class SHorizontalBox> ColorControls;
+	TSharedPtr<class SHorizontalBox> CommentControls;
+
+public:
+	/** Update the nodes */
+	void UpdateRefreshDelay();
+
+	void RefreshNodesInsideComment(const ECommentCollisionMethod OverrideCollisionMethod, const bool bIgnoreKnots = false);
+
+	float GetTitleBarHeight() const;
+
+	/** Util functions */
+	FSlateRect GetBoundsForNodesInside();
+	FSlateRect GetNodeBounds(UEdGraphNode* Node);
+	TSet<TSharedPtr<SAutoSizeCommentsGraphNode>> GetOtherCommentNodes();
+	void UpdateExistingCommentNodes();
+	bool AnySelectedNodes();
+	static bool RemoveNodesFromUnderComment(UEdGraphNode_Comment* InCommentNode, TSet<UObject*>& NodesToRemove);
+	static FSlateRect GetCommentBounds(UEdGraphNode_Comment* InCommentNode);
+	void SnapVectorToGrid(FVector2D& Vector);
+	bool IsLocalPositionInCorner(const FVector2D& MousePositionInNode) const;
+	TArray<UEdGraphNode*> GetEdGraphNodesUnderComment(UEdGraphNode_Comment* InCommentNode) const;
+
+	ASC_AnchorPoint GetAnchorPoint(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) const;
+
+	bool IsHeaderComment() const;
+	bool IsPresetStyle();
+
+	bool LoadCache();
+	void SaveToCache();
+
+	void QueryNodesUnderComment(TArray<TSharedPtr<SGraphNode>>& OutNodesUnderComment, const ECommentCollisionMethod OverrideCollisionMethod, const bool bIgnoreKnots = false);
+
+	void RandomizeColor();
+
+	void AdjustMinSize(FVector2D& InSize);
+
+	bool HasNodeBeenDeleted(UEdGraphNode* Node);
+
+	bool CanAddNode(const TSharedPtr<SGraphNode> OtherGraphNode, const bool bIgnoreKnots = false) const;
+	bool CanAddNode(const UObject* Node, const bool bIgnoreKnots = false) const;
+};
