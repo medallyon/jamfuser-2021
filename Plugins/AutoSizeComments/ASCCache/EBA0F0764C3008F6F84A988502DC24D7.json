@@ -1473,6 +1473,26 @@
 					}
 				}
 			}
+		},
+		"/Game/_Game/GameObjects/RunGenerator/BP_RunGenerator":
+		{
+			"graphData":
+			{
+				"A4D751C34E56066F6E389986131DCE3A":
+				{
+					"commentData":
+					{
+						"1451C3F14DDBC3AB895ED0814F9D958F":
+						{
+							"nodeGuids": []
+						},
+						"3F8B29C84BFD12CD84DA3E8FA6EE3CF6":
+						{
+							"nodeGuids": []
+						}
+					}
+				}
+			}
 		}
 	}
 }
