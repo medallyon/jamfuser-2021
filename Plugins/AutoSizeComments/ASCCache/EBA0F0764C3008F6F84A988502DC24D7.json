@@ -1473,6 +1473,61 @@
 					}
 				}
 			}
+		},
+		"/Game/_Game/GameObjects/RunGenerator/BP_RunGenerator":
+		{
+			"graphData":
+			{
+				"A4D751C34E56066F6E389986131DCE3A":
+				{
+					"commentData":
+					{
+						"1451C3F14DDBC3AB895ED0814F9D958F":
+						{
+							"nodeGuids": []
+						},
+						"3F8B29C84BFD12CD84DA3E8FA6EE3CF6":
+						{
+							"nodeGuids": []
+						}
+					}
+				}
+			}
+		},
+		"/Game/_Game/GameObjects/RunGeneration/BP_RunGenerator":
+		{
+			"graphData":
+			{
+				"A4D751C34E56066F6E389986131DCE3A":
+				{
+					"commentData":
+					{
+						"B539DF0245BE640BDB569E8221DB1076":
+						{
+							"nodeGuids": []
+						}
+					}
+				}
+			}
+		},
+		"/Game/_Game/GameObjects/GameInstance/BP_GameInstance":
+		{
+			"graphData":
+			{
+				"AC52750643EF76DE5A5925969CCAC7FA":
+				{
+					"commentData":
+					{
+						"DD96C7EE4A712C93BF60ECB926ADC7AC":
+						{
+							"nodeGuids": [
+								"34725017465BA4D732D4A8946FDD45AA",
+								"0DD50C4C4283599AE99C25AF2906B5AC"
+							]
+						}
+					}
+				}
+			}
 		}
 	}
 }
